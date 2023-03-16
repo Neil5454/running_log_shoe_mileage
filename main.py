@@ -5,12 +5,12 @@ forefoot stack, and drop (drop automatically calculated)) and (y) daily workouts
 from tkinter import *
 from tkinter import messagebox
 from PIL import ImageTk, Image
-import datetime
 from tkcalendar import DateEntry
 import pandas
 import pandastable
-import os
 import csv
+import datetime
+import os
 
 file_shoe_details = "shoe_details.csv"
 file_workout_log_program_launch = "workout_log.csv"
@@ -71,8 +71,8 @@ def add_new_shoe_details():
         shoe_details_dict = {
             "Shoe": [input_shoe_brand_model.get()],
             "Weight (oz)": [input_weight.get()],
-            "Stack Height (in)": [input_heel_stack.get()],
-            "Forefoot (in)": [input_forefoot_stack.get()],
+            "Heel Stack (in)": [input_heel_stack.get()],
+            "Forefoot Stack (in)": [input_forefoot_stack.get()],
             "Drop (in)": [input_drop.get()],
         }
 
@@ -106,7 +106,8 @@ def add_new_shoe_details():
 
 def save_workout():
     """Creates a dictionary from user-provided workout details and saves to a pandas dataframe and csv
-    ANCHOR sits on the Shoe entry field and the associated workout mileage is added to the cumulative mileage table"""
+    ANCHOR sits on the select shoe within the Shoe entry field and the associated workout mileage is added to the
+    cumulative mileage table"""
     workout_log_dict = {
         "Date": [input_date.get()],
         "Shoe": [input_shoe.get(ANCHOR)],
@@ -158,14 +159,16 @@ def display_shoe_stats():
         top.geometry("800x300")
         top.config(padx=25, pady=25)
         del df_shoe_details[df_shoe_details.columns[0]]
-
+        # Despite changing width and maxcellwidth to various values and trying various other codes,
+        # unable to dynamically adjust column width within the pandastable
         shoe_stats_table = pandastable.Table(top, dataframe=df_shoe_details, width=50, maxcellwidth=300,
                                              showstatusbar=True)
+
         shoe_stats_table.show()
         top.mainloop()
 
     else:
-        messagebox.showinfo(title="Shoe Details", message="No Workouts Have Been Entered")
+        messagebox.showinfo(title="Shoe Details", message="No Shoe Stats Have Been Entered")
 
 
 def display_workouts():
