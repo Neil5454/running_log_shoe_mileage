@@ -35,21 +35,21 @@ def add_new_shoe_details():
     input_weight.delete(0, END)  # set initial value to a blank field rather than the default 0.0
     input_weight.grid(row=1, column=1, padx=5, pady=5)
 
-    label_heel_stack = Label(top, text="Heel Stack (in):")
+    label_heel_stack = Label(top, text="Heel Stack (mm):")
     label_heel_stack.grid(row=2, column=0, sticky="W")
     heel_stack = DoubleVar()
     input_heel_stack = Entry(top, width=30, borderwidth=2, fg="Blue", textvariable=heel_stack)
     input_heel_stack.delete(0, END)  # set initial value to a blank field rather than the default 0.0
     input_heel_stack.grid(row=2, column=1, padx=5, pady=5)
 
-    label_forefoot_stack = Label(top, text="Forefoot Stack (in):")
+    label_forefoot_stack = Label(top, text="Forefoot Stack (mm):")
     label_forefoot_stack.grid(row=3, column=0, sticky="W")
     forefoot_stack = DoubleVar()
     input_forefoot_stack = Entry(top, width=30, borderwidth=2, fg="Blue", textvariable=forefoot_stack)
     input_forefoot_stack.delete(0, END)
     input_forefoot_stack.grid(row=3, column=1, padx=5, pady=5)
 
-    label_drop = Label(top, text="Drop (in):")
+    label_drop = Label(top, text="Drop (mm):")
     label_drop.grid(row=4, column=0, sticky="W")
     drop = DoubleVar()
     input_drop = Entry(top, width=30, borderwidth=2, textvariable=drop)
@@ -71,9 +71,9 @@ def add_new_shoe_details():
         shoe_details_dict = {
             "Shoe": [input_shoe_brand_model.get()],
             "Weight (oz)": [input_weight.get()],
-            "Heel Stack (in)": [input_heel_stack.get()],
-            "Forefoot Stack (in)": [input_forefoot_stack.get()],
-            "Drop (in)": [input_drop.get()],
+            "Heel Stack (mm)": [input_heel_stack.get()],
+            "Forefoot Stack (mm)": [input_forefoot_stack.get()],
+            "Drop (mm)": [input_drop.get()],
         }
 
         df_shoe_details = pandas.DataFrame(shoe_details_dict)
