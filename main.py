@@ -1,5 +1,5 @@
-"""Purpose of program is to allow a user to (i) enter (x) details for running shoes (i.e., brand/model, heel height,
-forefoot height, and drop (drop automatically calculated)) and (y) daily workouts (i.e., date, shoe, mileage), and
+"""Purpose of program is to allow a user to (i) enter (x) details for running shoes (i.e., brand/model, heel stack,
+forefoot stack, and drop (drop automatically calculated)) and (y) daily workouts (i.e., date, shoe, mileage), and
 (ii) display (x) each shoe and its cumulative mileage, (y) log of shoe details, and (z) log of workouts"""
 
 from tkinter import *
@@ -56,15 +56,15 @@ def add_new_shoe_details():
     input_drop.delete(0, END)
     input_drop.grid(row=4, column=1, padx=5, pady=5)
 
-    def set_label(*args):
+    def calculate_drop(*args):
         """Calculates drop (heel height minus forefoot height)"""
         try:
             drop.set(heel_stack.get() - forefoot_stack.get())
         except TclError:
             pass
 
-    heel_stack.trace('w', set_label)
-    forefoot_stack.trace('w', set_label)
+    heel_stack.trace('w', calculate_drop)
+    forefoot_stack.trace('w', calculate_drop)
 
     def save_shoe_details():
         """Creates a dictionary from user-provided shoe details and saves to a pandas dataframe and csv"""
@@ -120,9 +120,7 @@ def save_workout():
         if os.path.exists(file_workout_log_updated_for_latest_workout):
             df_workout_log.to_csv(file_workout_log_updated_for_latest_workout, mode='a', header=False)
         else:
-            # messagebox.showinfo(title="Workout Log", message="No Workouts Have Been Entered")
             df_workout_log.to_csv(file_workout_log_updated_for_latest_workout)
-            # df_workout_log.to_csv(file_shoe_details)
 
         input_miles.delete(0, END)
 
@@ -279,6 +277,6 @@ save_workout_button = Button(text="Save Workout", command=save_workout)
 save_workout_button.grid(row=4, column=1, pady=5)
 
 display_workout_log_button = Button(text="Display Workouts", command=display_workouts)
-display_workout_log_button.grid(row=5, column=2, pady=5)
+display_workout_log_button.grid(row=5, column=2)
 
 window.mainloop()
