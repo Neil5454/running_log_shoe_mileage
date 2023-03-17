@@ -1,4 +1,4 @@
-"""Purpose of program is to allow a user to (i) enter (x) details for running shoes (i.e., brand/model, heel stack,
+"""Program utilizes tkinter to allow a user to (i) enter (x) details for running shoes (i.e., brand/model, heel stack,
 forefoot stack, and drop (drop automatically calculated)) and (y) daily workouts (i.e., date, shoe, mileage), and
 (ii) display (x) each shoe and its cumulative mileage, (y) log of shoe details, and (z) log of workouts"""
 
@@ -15,7 +15,8 @@ import os
 file_shoe_details = "shoe_details.csv"
 file_workout_log_program_launch = "workout_log.csv"
 file_workout_log_updated_for_latest_workout = "workout_log.csv"
-current_shoe_list = []
+beginning_shoe_list = []
+updated_shoe_list = []
 
 
 def add_new_shoe_details():
@@ -125,20 +126,21 @@ def save_workout():
 
         input_miles.delete(0, END)
 
-        # Creates a list of current shoes
-        global current_shoe_list
+        # Creates a list of updated shoes
+        global updated_shoe_list
         if os.path.exists(file_shoe_details):
             with open(file_shoe_details) as data_file:
                 data = csv.reader(data_file)
                 for row in data:
                     if row[1] != "Shoe":
-                        current_shoe_list.append(row[1])
+                        updated_shoe_list.append(row[1])
 
             shoe_mileage_dict = {}
             # Sum miles for each shoe as workouts are saved
             mileage_calculator = pandas.read_csv(file_workout_log_updated_for_latest_workout)
-            for i in current_shoe_list:
-                shoe_mileage_dict[i] = '{:.2f}'.format(mileage_calculator.loc[mileage_calculator["Shoe"] == i, "Miles"].sum())
+            for i in updated_shoe_list:
+                shoe_mileage_dict[i] = \
+                    '{:.2f}'.format(mileage_calculator.loc[mileage_calculator["Shoe"] == i, "Miles"].sum())
 
             # Places at the bottom of the main window each shoe name and its updated mileage when a workout is saved
             for i, (key, value) in enumerate(shoe_mileage_dict.items()):
@@ -151,7 +153,7 @@ def save_workout():
 
 
 def display_shoe_stats():
-    """Prints shoe stats in a top-level window using a pandastable"""
+    """Displays shoe stats in a top-level window using a pandastable"""
     if os.path.exists(file_shoe_details):
         df_shoe_details = pandas.read_csv(file_shoe_details)
         top = Toplevel()
@@ -172,9 +174,12 @@ def display_shoe_stats():
 
 
 def display_workouts():
-    """Prints workouts in a top-level window using a pandastable"""
-    if os.path.exists(file_workout_log_updated_for_latest_workout):
+    """Displays workouts in a top-level window using a pandastable"""
+    try:
         df_workout_log = pandas.read_csv(file_workout_log_updated_for_latest_workout)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Shoe Details", message="No Workouts Have Been Entered")
+    else:
         top = Toplevel()
         top.title("Workout log")
         top.geometry("800x300")
@@ -185,18 +190,17 @@ def display_workouts():
                                              showstatusbar=True)
         shoe_stats_table.show()
         top.mainloop()
-    else:
-        messagebox.showinfo(title="Shoe Details", message="No Workouts Have Been Entered")
 
 
-def nummie_bears_only_in_miles_entry_field(*args):
-    item = var.get()
+def nummie_bears_only_in_miles_entry_field(miles):
+    """Restricts user input in the miles entry field to numbers only"""
+    if miles == "":
+        return True
     try:
-        item_type = type(int(item))
-        if isinstance(item_type, type(int(1))):
-            return item_type
+        float(miles)
+        return True
     except ValueError:
-        input_miles.delete(0, END)
+        return False
 
 
 # UI Setup for Main Window
@@ -232,32 +236,31 @@ today = datetime.date.today()
 input_date = DateEntry(width=27, borderwidth=2, year=today.year, month=today.month, day=today.day)
 input_date.grid(row=1, column=1, padx=5, pady=5)
 
-# Displays table with initial shoe list (prior to adding new shoes)
+# Displays listbox with initial shoe list (prior to adding new shoes)
 input_shoe = Listbox(width=30, height=7, borderwidth=2)
 input_shoe.grid(row=2, column=1, padx=5, pady=5)
 try:
-    df = pandas.read_csv("shoe_details.csv")
+    df = pandas.read_csv(file_shoe_details)
 except FileNotFoundError:
-    df = pandas.DataFrame({'Shoe': []})
+    pass
+else:
+    beginning_shoe_list = df['Shoe'].tolist()
+    for shoe in beginning_shoe_list:
+        input_shoe.insert(END, shoe)
 
-shoe_list = df['Shoe'].tolist()
-
-for shoe in shoe_list:
-    input_shoe.insert(END, shoe)
-
-# Prevents non-numbers from being entered into the miles entry field
-var = StringVar()
-input_miles = Entry(width=30, borderwidth=2, fg="Blue", textvariable=var)
-var.trace("w", nummie_bears_only_in_miles_entry_field)
+# Restricts user input in the miles entry field to numbers only
+vcmd = (window.register(nummie_bears_only_in_miles_entry_field), '%P')
+input_miles = Entry(width=30, borderwidth=2, fg="Blue", validate="key", validatecommand=vcmd)
 input_miles.grid(row=3, column=1, padx=5, pady=5)
+
 
 # Displays table with initial shoe list and initial cumulative mileage (prior to saving new workouts)
 if os.path.exists(file_workout_log_program_launch):
     shoe_mileage_dict_program_launch = {}
+
     """Sum miles for each shoe as workouts are saved"""
     mileage_calculator_program_launch = pandas.read_csv(file_workout_log_program_launch)
-
-    for x in shoe_list:
+    for x in beginning_shoe_list:
         shoe_mileage_dict_program_launch[x] = '{:.2f}'.format(mileage_calculator_program_launch.loc[mileage_calculator_program_launch["Shoe"] == x, "Miles"].sum())
         """Places each show name and total mileage for each shoe at bottom of main window"""
     for x, (key1, value1) in enumerate(shoe_mileage_dict_program_launch.items()):
