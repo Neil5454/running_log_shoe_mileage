@@ -230,13 +230,12 @@ label_miles.grid(row=3, column=0, sticky="W")
 label_miles_per_shoe = Label(text="Cumulative Miles Per Shoe:", font=("Segoe UI", 9, "underline"), bg="White")
 label_miles_per_shoe.grid(row=5, column=0, sticky="W")
 
-
-# Entries
+# Date Entry
 today = datetime.date.today()
 input_date = DateEntry(width=27, borderwidth=2, year=today.year, month=today.month, day=today.day)
 input_date.grid(row=1, column=1, padx=5, pady=5)
 
-# Displays listbox with initial shoe list (prior to adding new shoes)
+# Shoe Entry - Displays a listbox with initial shoe list (prior to adding new shoes)
 input_shoe = Listbox(width=30, height=7, borderwidth=2)
 input_shoe.grid(row=2, column=1, padx=5, pady=5)
 try:
@@ -248,11 +247,10 @@ else:
     for shoe in beginning_shoe_list:
         input_shoe.insert(END, shoe)
 
-# Restricts user input in the miles entry field to numbers only
+# Mileage Entry - restricts user input in the miles entry field to numbers only
 vcmd = (window.register(nummie_bears_only_in_miles_entry_field), '%P')
 input_miles = Entry(width=30, borderwidth=2, fg="Blue", validate="key", validatecommand=vcmd)
 input_miles.grid(row=3, column=1, padx=5, pady=5)
-
 
 # Displays table with initial shoe list and initial cumulative mileage (prior to saving new workouts)
 if os.path.exists(file_workout_log_program_launch):
@@ -270,7 +268,6 @@ if os.path.exists(file_workout_log_program_launch):
         label_mileage_miles_per_shoe_table.grid(row=6+x, column=1, sticky="W")
 else:
     pass
-
 
 # Buttons
 add_shoe_button = Button(text="Add Shoe", command=add_new_shoe_details)
