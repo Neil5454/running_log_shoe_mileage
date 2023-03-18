@@ -1,6 +1,14 @@
-"""Program utilizes tkinter to allow a user to (i) enter (x) details for running shoes (i.e., brand/model, heel stack,
+"""
+Program utilizes tkinter to allow a user to (i) enter (x) details for running shoes (i.e., brand/model, heel stack,
 forefoot stack, and drop (drop automatically calculated)) and (y) daily workouts (i.e., date, shoe, mileage), and
-(ii) display (x) each shoe and its cumulative mileage, (y) log of shoe details, and (z) log of workouts"""
+(ii) display (x) each shoe and its cumulative mileage, (y) shoe details, and (z) workout log
+
+When using PyInstaller, there is an issue with (i) detection of the babel dependency of
+tkcalendar, which is being fixed by using '--hidden-import' (https://github.com/j4321/tkcalendar/issues/32)
+and (ii) detection of the runner image, which is being fixed by using the resource_path function
+To hide console window, use '-w'
+PyInstaller script to create exe: 'pyinstaller --onefile --hidden-import babel.numbers -w main.py'
+"""
 
 from tkinter import *
 from tkinter import messagebox
@@ -12,6 +20,8 @@ import csv
 import datetime
 import os
 
+# Using absolute file path so that PyInstaller and resource_path function can handle the runner image png
+runner_image_file_path = "C:\\Users\\nkc54\PycharmProjects\\running_log_shoe_mileage\\runner_image_color_bg_removed.png"
 file_shoe_details = "shoe_details.csv"
 file_workout_log_program_launch = "workout_log.csv"
 file_workout_log_updated_for_latest_workout = "workout_log.csv"
@@ -89,6 +99,7 @@ def add_new_shoe_details():
 
         # Inserts shoe into last place within the listbox named (input_shoe) on the main window
         input_shoe.insert(END, input_shoe_brand_model.get())
+        input_shoe.selection_clear(0, "end")
         input_shoe.see(END)
 
         # Clear Shoe Detail Fields
@@ -208,8 +219,19 @@ window = Tk()
 window.title("Running Log and Shoe Mileage")
 window.config(padx=25, pady=25, bg="White")
 
-# used website remove.bg to remove checked background in original image
-runner_image = Image.open("runner_image_color_bg_removed.png")
+
+def resource_path(relative_path):
+    """Code allows runner image to be handled by PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, runner_image_file_path)
+
+
+runner_image = Image.open(resource_path(runner_image_file_path))
 runner_image_resize = runner_image.resize((225, 170))
 
 canvas = Canvas(width=480, height=200, bg="SlateGray1", highlightthickness=4)
